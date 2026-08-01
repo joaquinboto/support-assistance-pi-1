@@ -1,0 +1,1 @@
+{"timestamp": "2026-08-01T21:22:03.956295+00:00", "request_id": "55e76cab-8046-49c0-bdc1-bdc8f0d6dfbd", "model": "gpt-4o-mini", "prompt_tokens": 659, "completion_tokens": 95, "total_tokens": 754, "latency_ms": 3495.69, "estimated_cost_usd": 0.00015585, "moderation_flagged": false, "moderation_categories": []}
