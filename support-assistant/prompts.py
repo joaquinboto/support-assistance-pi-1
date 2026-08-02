@@ -7,12 +7,9 @@ Elegimos few-shot en lugar de chain-of-thought porque:
   gastando tokens/latencia/costo sin mejorar el campo que ve el cliente.
 - Los ejemplos few-shot permiten calibrar `confidence` y `actions` por demostración
   (qué cuenta como confianza 0.9 vs 0.4, cuándo marcar "escalate_to_human"), algo
-  difícil de fijar solo con instrucciones en prosa.
+  difícil de fijar solo con instrucciones.
 - Es barato y determinístico: 3 ejemplos cortos agregan un costo fijo y predecible
-  de prompt tokens por llamada, a diferencia de self-consistency (múltiples
-  completions muestreadas = N veces el costo y la latencia por una ganancia de
-  precisión marginal que no importa demasiado para respuestas de soporte cortas
-  y factuales).
+  de prompt tokens por llamada.
 
 """
 
