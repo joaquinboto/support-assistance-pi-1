@@ -6,14 +6,26 @@ Chatbot de soporte para una plataforma de RRHH (HR SaaS) que responde preguntas 
 
 - **Python 3.12** (recomendado exactamente esa versión, no 3.14+). `langchain-pinecone` todavía no publica soporte para Python 3.14 al día de hoy — con 3.14 la instalación de `requirements.txt` falla directamente (no hay wheel instalable). La imagen Docker ya usa 3.12-slim, así que solo importa si corrés fuera de Docker.
 
-```bash
+```powershell
 py -3.12 -m venv .venv
-./.venv/Scripts/activate   # Linux/Mac: source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+$env:OPENAI_API_KEY = "sk-..."
+$env:PINECONE_API_KEY = "pcsk_..."
+```
+
+```bash
+# Bash/Linux/Mac
+py -3.12 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 export OPENAI_API_KEY=sk-...
 export PINECONE_API_KEY=pcsk_...
 ```
+
+**Importante:** el venv activa la sesión de terminal actual, no queda activado entre sesiones ni lo detecta `python` si abrís una terminal nueva o corrés el script sin activar. Si ejecutás `python src/query.py ...` y ves `No module named 'langchain_pinecone'`, es porque estás corriendo el Python global (3.14) en vez del venv (3.12) — activá el venv de nuevo (`.\.venv\Scripts\Activate.ps1` en PowerShell) antes de correr el script; vas a ver `(.venv)` al principio del prompt cuando esté activo. Si PowerShell rechaza el script de activación por políticas de ejecución, corré antes `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
 
 Las demás variables de `.env.example` (`SUPPORT_ASSISTANT_MODEL`, `EMBEDDING_MODEL`, `PINECONE_INDEX_NAME`, `PINECONE_CLOUD`, `PINECONE_REGION`) tienen valores por defecto razonables; solo hace falta tocarlas si querés cambiar de modelo o región.
 
