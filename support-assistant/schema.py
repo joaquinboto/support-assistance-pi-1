@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-CATEGORIAS_PERMITIDAS = ["billing", "technical", "account", "shipping", "other"]
+CATEGORIAS_PERMITIDAS = ["billing", "technical", "account", "policy", "other"]
 
 ESQUEMA_JSON_RESPUESTA = {
     "name": "support_response",

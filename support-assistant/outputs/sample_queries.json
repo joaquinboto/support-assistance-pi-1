@@ -1,0 +1,110 @@
+[
+  {
+    "user_question": "¿Cómo solicito días de vacaciones?",
+    "system_answer": "Para solicitar días de vacaciones, ve a Mi perfil > Solicitudes > Nueva solicitud de licencia. Selecciona el tipo de licencia (vacaciones) y el rango de fechas, luego envíala para que tu manager directo la apruebe.",
+    "chunks_related": [
+      {
+        "id": "faq-10",
+        "pregunta": "¿Cómo solicito días de vacaciones o licencia?",
+        "respuesta": "Desde Mi perfil > Solicitudes > Nueva solicitud de licencia, elegí el tipo (vacaciones, enfermedad, licencia especial) y el rango de fechas. La solicitud va automáticamente a tu manager directo para aprobación y no consume días del balance hasta que sea aprobada.",
+        "categoria": "policy",
+        "score": 0.788004935
+      },
+      {
+        "id": "faq-7",
+        "pregunta": "¿Cómo funciona el precio por asiento (seat-based pricing)?",
+        "respuesta": "El precio se calcula según la cantidad de empleados activos cargados en la plataforma, no según cuántos usuarios inician sesión. Un empleado dado de baja deja de contar para la facturación desde el mes siguiente a su desvinculación, no de forma inmediata ni retroactiva.",
+        "categoria": "billing",
+        "score": 0.551738858
+      },
+      {
+        "id": "faq-25",
+        "pregunta": "¿Cuánto tarda en procesarse la nómina mensual?",
+        "respuesta": "El proceso de nómina se corre automáticamente los últimos 3 días hábiles de cada mes, tomando en cuenta licencias aprobadas, horas extra cargadas y reembolsos de gastos aprobados durante ese ciclo. Los recibos de sueldo quedan disponibles en el perfil del empleado el mismo día del pago.",
+        "categoria": "policy",
+        "score": 0.520609915
+      }
+    ],
+    "answer": "Para solicitar días de vacaciones, ve a Mi perfil > Solicitudes > Nueva solicitud de licencia. Selecciona el tipo de licencia (vacaciones) y el rango de fechas, luego envíala para que tu manager directo la apruebe.",
+    "confidence": 0.9,
+    "category": "policy",
+    "actions": [],
+    "escalate_to_human": false,
+    "evaluation": {
+      "score": 10,
+      "justification": "La respuesta es completamente relevante y precisa, ya que se basa en el chunk recuperado que explica claramente el proceso para solicitar días de vacaciones. Además, cubre todos los aspectos de la pregunta del usuario de manera completa."
+    }
+  },
+  {
+    "user_question": "¿Cómo cambio el plan de mi suscripción?",
+    "system_answer": "Desde Configuración > Facturación podés cambiar de plan en cualquier momento. Si hacés un upgrade, el cobro se prorratea automáticamente por los días restantes del ciclo actual. Para un downgrade, el cambio se aplicará al inicio del próximo ciclo de facturación y no se reembolsará la diferencia del ciclo en curso.",
+    "chunks_related": [
+      {
+        "id": "faq-5",
+        "pregunta": "¿Cómo cambio el plan de mi suscripción?",
+        "respuesta": "Desde Configuración > Facturación podés cambiar de plan en cualquier momento. Si hacés upgrade, el cobro se prorratea automáticamente por los días restantes del ciclo actual. Si hacés downgrade, el cambio se aplica al inicio del próximo ciclo de facturación y no se reembolsa la diferencia del ciclo en curso.",
+        "categoria": "billing",
+        "score": 0.728811324
+      },
+      {
+        "id": "faq-6",
+        "pregunta": "¿Por qué me cobraron dos veces en el mismo mes?",
+        "respuesta": "Esto suele pasar cuando cambiás de plan a mitad de ciclo: el sistema cobra el prorrateo del plan nuevo además de la cuota ya facturada del plan anterior. Si los dos cargos son por el mismo monto y no hiciste ningún cambio de plan, puede ser un error de facturación y un agente humano tiene que revisar la cuenta para emitir un reembolso.",
+        "categoria": "billing",
+        "score": 0.697938
+      },
+      {
+        "id": "faq-7",
+        "pregunta": "¿Cómo funciona el precio por asiento (seat-based pricing)?",
+        "respuesta": "El precio se calcula según la cantidad de empleados activos cargados en la plataforma, no según cuántos usuarios inician sesión. Un empleado dado de baja deja de contar para la facturación desde el mes siguiente a su desvinculación, no de forma inmediata ni retroactiva.",
+        "categoria": "billing",
+        "score": 0.547737241
+      }
+    ],
+    "answer": "Desde Configuración > Facturación podés cambiar de plan en cualquier momento. Si hacés un upgrade, el cobro se prorratea automáticamente por los días restantes del ciclo actual. Para un downgrade, el cambio se aplicará al inicio del próximo ciclo de facturación y no se reembolsará la diferencia del ciclo en curso.",
+    "confidence": 0.9,
+    "category": "billing",
+    "actions": [],
+    "escalate_to_human": false,
+    "evaluation": {
+      "score": 10,
+      "justification": "La respuesta es completamente relevante y precisa, ya que se basa en el chunk recuperado que aborda directamente cómo cambiar el plan de suscripción. Además, cubre todos los aspectos importantes del proceso, incluyendo detalles sobre el prorrateo y el tratamiento de upgrades y downgrades."
+    }
+  },
+  {
+    "user_question": "¿La plataforma tiene API para integraciones?",
+    "system_answer": "Sí, los planes Business y Enterprise incluyen acceso a una API REST documentada, con autenticación por token y un límite de 1000 requests por hora. Puedes generar el token desde Configuración > Desarrolladores > API Keys.",
+    "chunks_related": [
+      {
+        "id": "faq-21",
+        "pregunta": "¿La plataforma tiene una API pública para integraciones custom?",
+        "respuesta": "Sí, los planes Business y Enterprise incluyen acceso a una API REST documentada, con autenticación por token y límite de 1000 requests por hora. El token se genera desde Configuración > Desarrolladores > API Keys y puede revocarse en cualquier momento sin afectar otras integraciones activas.",
+        "categoria": "technical",
+        "score": 0.669225752
+      },
+      {
+        "id": "faq-20",
+        "pregunta": "¿Cómo integro la plataforma con Slack o Google Calendar?",
+        "respuesta": "Desde Configuración > Integraciones, elegí Slack o Google Calendar y autorizá el acceso con las credenciales de administrador de esa herramienta. Una vez conectado, las solicitudes de licencia aprobadas se sincronizan automáticamente como eventos de calendario y las notificaciones importantes se pueden replicar en un canal de Slack.",
+        "categoria": "technical",
+        "score": 0.57660681
+      },
+      {
+        "id": "faq-2",
+        "pregunta": "¿Cómo agrego un nuevo empleado a la plataforma?",
+        "respuesta": "Como administrador, andá a Empleados > Agregar empleado, completá los datos básicos (nombre, email corporativo, puesto, fecha de ingreso) y asigná un rol de acceso. El sistema le manda automáticamente una invitación por email para que configure su cuenta y complete su perfil de onboarding.",
+        "categoria": "account",
+        "score": 0.520476341
+      }
+    ],
+    "answer": "Sí, los planes Business y Enterprise incluyen acceso a una API REST documentada, con autenticación por token y un límite de 1000 requests por hora. Puedes generar el token desde Configuración > Desarrolladores > API Keys.",
+    "confidence": 0.9,
+    "category": "technical",
+    "actions": [],
+    "escalate_to_human": false,
+    "evaluation": {
+      "score": 10,
+      "justification": "La respuesta es completamente relevante y precisa, ya que se basa en el chunk recuperado que detalla la existencia de una API en los planes Business y Enterprise, así como la información sobre la autenticación y el límite de requests. Además, cubre de manera completa la pregunta del usuario sobre la disponibilidad de una API para integraciones."
+    }
+  }
+]

@@ -1,0 +1,107 @@
+Pregunta: ¿Cómo restablezco mi contraseña?
+Categoria: account
+Respuesta: Andá a la pantalla de inicio de sesión y hacé clic en "¿Olvidaste tu contraseña?". Te vamos a enviar un email con un link para crear una nueva contraseña. El link expira a los 30 minutos. Si no te llega el email, revisá la carpeta de spam y confirmá que el correo registrado en tu perfil de empleado sea el correcto.
+
+Pregunta: ¿Cómo activo la autenticación de dos factores (2FA) en mi cuenta?
+Categoria: account
+Respuesta: Desde Configuración de cuenta > Seguridad, activá "Autenticación de dos factores" y escaneá el código QR con una app como Google Authenticator o Authy. Una vez activado, cada inicio de sesión va a pedir el código de 6 dígitos además de la contraseña. Es obligatorio para cuentas con rol de administrador de RRHH.
+
+Pregunta: ¿Cómo agrego un nuevo empleado a la plataforma?
+Categoria: account
+Respuesta: Como administrador, andá a Empleados > Agregar empleado, completá los datos básicos (nombre, email corporativo, puesto, fecha de ingreso) y asigná un rol de acceso. El sistema le manda automáticamente una invitación por email para que configure su cuenta y complete su perfil de onboarding.
+
+Pregunta: ¿Puedo tener dos perfiles de empleado duplicados y fusionarlos?
+Categoria: account
+Respuesta: Sí, si un empleado quedó con dos perfiles (por ejemplo por un alta duplicada), un administrador puede fusionarlos desde Empleados > Herramientas avanzadas > Fusionar perfiles. Esto conserva el historial de licencias, evaluaciones y documentos del perfil más antiguo y descarta los datos duplicados del más nuevo.
+
+Pregunta: ¿Qué roles y permisos existen en la plataforma?
+Categoria: account
+Respuesta: Hay tres roles principales: Administrador (acceso total, incluida configuración de facturación), Manager (ve y aprueba solicitudes de su equipo directo) y Empleado (ve y gestiona su propio perfil). Los permisos de cada rol se pueden personalizar desde Configuración > Roles y permisos si el plan contratado incluye permisos granulares.
+
+Pregunta: ¿Cómo cambio el plan de mi suscripción?
+Categoria: billing
+Respuesta: Desde Configuración > Facturación podés cambiar de plan en cualquier momento. Si hacés upgrade, el cobro se prorratea automáticamente por los días restantes del ciclo actual. Si hacés downgrade, el cambio se aplica al inicio del próximo ciclo de facturación y no se reembolsa la diferencia del ciclo en curso.
+
+Pregunta: ¿Por qué me cobraron dos veces en el mismo mes?
+Categoria: billing
+Respuesta: Esto suele pasar cuando cambiás de plan a mitad de ciclo: el sistema cobra el prorrateo del plan nuevo además de la cuota ya facturada del plan anterior. Si los dos cargos son por el mismo monto y no hiciste ningún cambio de plan, puede ser un error de facturación y un agente humano tiene que revisar la cuenta para emitir un reembolso.
+
+Pregunta: ¿Cómo funciona el precio por asiento (seat-based pricing)?
+Categoria: billing
+Respuesta: El precio se calcula según la cantidad de empleados activos cargados en la plataforma, no según cuántos usuarios inician sesión. Un empleado dado de baja deja de contar para la facturación desde el mes siguiente a su desvinculación, no de forma inmediata ni retroactiva.
+
+Pregunta: ¿Dónde descargo las facturas de mi suscripción?
+Categoria: billing
+Respuesta: Desde Configuración > Facturación > Historial de facturas podés descargar el PDF de cada factura emitida, con el desglose de impuestos según el país registrado en tu cuenta. Las facturas quedan disponibles por 5 años para fines de auditoría.
+
+Pregunta: ¿Cómo cancelo mi suscripción?
+Categoria: billing
+Respuesta: Desde Configuración > Facturación > Cancelar suscripción. La cancelación aplica al final del ciclo de facturación actual: seguís teniendo acceso hasta esa fecha y no se te cobra de nuevo. No hay reembolsos parciales por el tiempo no utilizado del ciclo en curso.
+
+Pregunta: ¿Cómo solicito días de vacaciones o licencia?
+Categoria: policy
+Respuesta: Desde Mi perfil > Solicitudes > Nueva solicitud de licencia, elegí el tipo (vacaciones, enfermedad, licencia especial) y el rango de fechas. La solicitud va automáticamente a tu manager directo para aprobación y no consume días del balance hasta que sea aprobada.
+
+Pregunta: ¿Cuántos días de licencia por maternidad o paternidad corresponden?
+Categoria: policy
+Respuesta: La política estándar de la plataforma sugiere 90 días corridos para licencia por maternidad y 15 días para paternidad, pero cada empresa puede configurar sus propios valores según la legislación local desde Configuración > Políticas de licencia. Consultá siempre la configuración específica de tu organización.
+
+Pregunta: ¿Cuál es la política de trabajo remoto?
+Categoria: policy
+Respuesta: La política de trabajo remoto es configurable por cada empresa desde Configuración > Políticas > Trabajo remoto, donde se define si es full remoto, híbrido con días fijos, o presencial. Los cambios de modalidad de un empleado individual los aprueba su manager y quedan registrados en su perfil.
+
+Pregunta: ¿Cómo funciona el ciclo de evaluaciones de desempeño?
+Categoria: policy
+Respuesta: Las evaluaciones de desempeño se corren en ciclos configurables (trimestral, semestral o anual) desde el módulo de Performance. Cada ciclo incluye autoevaluación del empleado, evaluación del manager y, opcionalmente, feedback de pares (evaluación 360°). Los resultados quedan en el historial del perfil del empleado.
+
+Pregunta: ¿Cómo pido el reembolso de un gasto?
+Categoria: policy
+Respuesta: Desde Gastos > Nuevo reembolso, subí la foto o PDF del comprobante, indicá la categoría del gasto y el monto. El reembolso pasa a aprobación del manager y, una vez aprobado, se procesa junto con el siguiente pago de nómina, salvo que la empresa tenga configurado un ciclo de reembolsos separado.
+
+Pregunta: ¿Cuál es el procedimiento de desvinculación (offboarding) de un empleado?
+Categoria: policy
+Respuesta: Un administrador debe iniciar el proceso desde Empleados > Offboarding, que dispara automáticamente la revocación de accesos a integraciones conectadas, el cálculo de la liquidación final y una checklist de tareas (devolución de equipo, entrevista de salida). El perfil del empleado pasa a estado "inactivo" pero su historial se conserva.
+
+Pregunta: ¿Cómo reporto una violación al código de conducta?
+Categoria: policy
+Respuesta: Existe un canal confidencial en Ayuda > Reportar una inquietud, donde el reporte puede hacerse de forma anónima si así se elige. Estos reportes no pasan por el manager directo del empleado, sino directamente al equipo de RRHH designado en la configuración de la empresa, para evitar conflictos de interés.
+
+Pregunta: ¿Por cuánto tiempo se conservan mis datos personales luego de dejar la empresa?
+Categoria: policy
+Respuesta: Los datos personales de un empleado desvinculado se conservan según la política de retención configurada por la empresa, con un mínimo legal de 2 años para fines impositivos y laborales en la mayoría de las jurisdicciones soportadas. Podés solicitar una copia o eliminación anticipada de tus datos personales contactando al administrador de tu cuenta.
+
+Pregunta: La aplicación no carga y muestra una pantalla en blanco, ¿qué hago?
+Categoria: technical
+Respuesta: Probá primero limpiar la caché del navegador y recargar con Ctrl+Shift+R (Cmd+Shift+R en Mac). Si el problema persiste, probá en modo incógnito para descartar una extensión conflictiva. Si sigue sin cargar, puede ser un problema del lado del servidor y conviene escalar a soporte técnico con el navegador y sistema operativo que estás usando.
+
+Pregunta: ¿Por qué las notificaciones push dejaron de llegarme?
+Categoria: technical
+Respuesta: Revisá que las notificaciones estén habilitadas tanto en la configuración de la app (Configuración > Notificaciones) como en los permisos del sistema operativo del dispositivo. Si ambas están habilitadas y el problema continúa, puede ser un token de dispositivo desactualizado que requiere que un agente técnico lo regenere del lado del servidor.
+
+Pregunta: ¿Cómo integro la plataforma con Slack o Google Calendar?
+Categoria: technical
+Respuesta: Desde Configuración > Integraciones, elegí Slack o Google Calendar y autorizá el acceso con las credenciales de administrador de esa herramienta. Una vez conectado, las solicitudes de licencia aprobadas se sincronizan automáticamente como eventos de calendario y las notificaciones importantes se pueden replicar en un canal de Slack.
+
+Pregunta: ¿La plataforma tiene una API pública para integraciones custom?
+Categoria: technical
+Respuesta: Sí, los planes Business y Enterprise incluyen acceso a una API REST documentada, con autenticación por token y límite de 1000 requests por hora. El token se genera desde Configuración > Desarrolladores > API Keys y puede revocarse en cualquier momento sin afectar otras integraciones activas.
+
+Pregunta: ¿Cómo exporto los datos de todos los empleados?
+Categoria: technical
+Respuesta: Desde Empleados > Exportar, podés generar un archivo CSV o Excel con los campos que elijas (datos personales, salario, historial de licencias, evaluaciones). La exportación queda registrada en el log de auditoría con el usuario y la fecha, ya que incluye datos sensibles.
+
+Pregunta: ¿Qué nivel de disponibilidad (SLA) garantiza la plataforma?
+Categoria: technical
+Respuesta: El SLA estándar garantiza 99.9% de uptime mensual para los planes Business y Enterprise, con notificación proactiva de incidentes en la página de estado pública. Si el uptime real cae por debajo del SLA contratado, se aplican créditos de servicio proporcionales según la política publicada en el contrato.
+
+Pregunta: ¿La aplicación móvil tiene las mismas funciones que la versión web?
+Categoria: technical
+Respuesta: La app móvil cubre las funciones más usadas por empleados (solicitar licencias, marcar asistencia, ver recibos de sueldo, chatear con soporte), pero las funciones administrativas avanzadas como configuración de nómina o roles de permisos solo están disponibles desde la versión web por ahora.
+
+Pregunta: ¿Cuánto tarda en procesarse la nómina mensual?
+Categoria: policy
+Respuesta: El proceso de nómina se corre automáticamente los últimos 3 días hábiles de cada mes, tomando en cuenta licencias aprobadas, horas extra cargadas y reembolsos de gastos aprobados durante ese ciclo. Los recibos de sueldo quedan disponibles en el perfil del empleado el mismo día del pago.
+
+Pregunta: ¿Cuál es la velocidad de crucero de una golondrina sin carga?
+Categoria: other
+Respuesta: Esta pregunta no tiene relación con la plataforma de RRHH ni con el alcance de soporte, así que no puedo ayudarte con esto acá.

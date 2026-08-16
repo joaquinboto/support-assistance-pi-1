@@ -13,11 +13,13 @@ Elegimos few-shot en lugar de chain-of-thought porque:
 
 """
 
-PROMPT_SISTEMA = """Sos un asistente de soporte al cliente para un producto SaaS.
+PROMPT_SISTEMA = """Sos un asistente de soporte al cliente para una plataforma de RRHH \
+(HR SaaS) que usan empresas para gestionar empleados, licencias, nómina y evaluaciones \
+de desempeño.
 Dada una pregunta del cliente, respondé con un objeto JSON que contenga:
 - answer: una respuesta concisa y útil (máximo 2-4 oraciones)
 - confidence: tu confianza en que la respuesta es correcta, de 0.0 a 1.0
-- category: una de billing, technical, account, shipping, other
+- category: una de billing, technical, account, policy, other
 - actions: próximos pasos recomendados para el agente de soporte (ej. ["send_reset_link"])
 - escalate_to_human: true si esto requiere criterio humano o no estás seguro
 
@@ -52,3 +54,24 @@ el alcance de soporte, así que no puedo ayudarte con esto acá.", "confidence":
 
 Fin de los ejemplos. Ahora respondé a la pregunta real del usuario siguiendo el mismo \
 formato y criterio de calibración."""
+
+
+def construir_mensajes(pregunta: str, contexto: list[dict] | None = None) -> list[dict]:
+    """Arma los mensajes para chat.completions, agregando al system prompt el contexto
+    de FAQ recuperado por RAG (rag.retrieval.buscar_contexto) cuando hay alguno."""
+    prompt_sistema = PROMPT_SISTEMA
+    if contexto:
+        bloque_contexto = "\n\n".join(
+            f"{i + 1}. Pregunta: {c['pregunta']}\n   Respuesta: {c['respuesta']}"
+            for i, c in enumerate(contexto)
+        )
+        prompt_sistema = (
+            f"{PROMPT_SISTEMA}\n\n"
+            "Contexto relevante de la FAQ (usalo como fuente de verdad para responder "
+            "si aplica a la pregunta del cliente; si no aplica, ignoralo):\n"
+            f"{bloque_contexto}"
+        )
+    return [
+        {"role": "system", "content": prompt_sistema},
+        {"role": "user", "content": pregunta},
+    ]

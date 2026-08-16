@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import main
-from main import procesar_consulta
+from src import query
+from src.query import procesar_consulta
 
 
 def _cliente_mock_exitoso():
@@ -29,7 +29,7 @@ def _cliente_mock_exitoso():
 
 
 def test_procesar_consulta_devuelve_json_valido(tmp_path, monkeypatch):
-    monkeypatch.setattr(main, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
+    monkeypatch.setattr(query, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
     cliente = _cliente_mock_exitoso()
 
     resultado = procesar_consulta("No puedo iniciar sesión", cliente=cliente)
@@ -39,9 +39,21 @@ def test_procesar_consulta_devuelve_json_valido(tmp_path, monkeypatch):
     assert isinstance(resultado["actions"], list)
 
 
+def test_procesar_consulta_cumple_el_contrato_requerido(tmp_path, monkeypatch):
+    """El contrato pedido por la consigna: user_question, system_answer, chunks_related."""
+    monkeypatch.setattr(query, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
+    cliente = _cliente_mock_exitoso()
+
+    resultado = procesar_consulta("No puedo iniciar sesión", cliente=cliente)
+
+    assert resultado["user_question"] == "No puedo iniciar sesión"
+    assert resultado["system_answer"] == "Probá restablecer tu contraseña."
+    assert isinstance(resultado["chunks_related"], list)
+
+
 def test_procesar_consulta_registra_metricas(tmp_path, monkeypatch):
     ruta_log = tmp_path / "metrics.jsonl"
-    monkeypatch.setattr(main, "RUTA_LOG_METRICAS", ruta_log)
+    monkeypatch.setattr(query, "RUTA_LOG_METRICAS", ruta_log)
     cliente = _cliente_mock_exitoso()
 
     procesar_consulta("No puedo iniciar sesión", cliente=cliente)
@@ -58,7 +70,7 @@ def test_procesar_consulta_registra_metricas(tmp_path, monkeypatch):
 
 
 def test_procesar_consulta_moderacion_flageada_corta_circuito(tmp_path, monkeypatch):
-    monkeypatch.setattr(main, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
+    monkeypatch.setattr(query, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
     cliente = MagicMock()
     cliente.moderations.create.return_value = MagicMock(
         results=[
@@ -72,4 +84,19 @@ def test_procesar_consulta_moderacion_flageada_corta_circuito(tmp_path, monkeypa
 
     assert resultado["escalate_to_human"] is True
     assert resultado["confidence"] == 0.0
+    assert resultado["chunks_related"] == []
     cliente.chat.completions.create.assert_not_called()
+
+
+def test_procesar_consulta_evaluar_incluye_evaluation(tmp_path, monkeypatch):
+    monkeypatch.setattr(query, "RUTA_LOG_METRICAS", tmp_path / "metrics.jsonl")
+    cliente = _cliente_mock_exitoso()
+    monkeypatch.setattr(
+        query,
+        "evaluar_respuesta",
+        lambda **kwargs: {"score": 9, "justification": "Respuesta precisa y completa."},
+    )
+
+    resultado = procesar_consulta("No puedo iniciar sesión", cliente=cliente, evaluar=True)
+
+    assert resultado["evaluation"] == {"score": 9, "justification": "Respuesta precisa y completa."}

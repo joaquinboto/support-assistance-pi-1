@@ -1,0 +1,6 @@
+services:
+  assistant:
+    build: .
+    env_file: .env
+    volumes:
+      - ./metrics.jsonl:/app/metrics.jsonl
