@@ -4,9 +4,11 @@ Chatbot de soporte para una plataforma de RRHH (HR SaaS) que responde preguntas 
 
 ## Setup
 
-- Python 3.12 o superior (probado en Docker con 3.12, y localmente con 3.14).
+- **Python 3.12** (recomendado exactamente esa versión, no 3.14+). `langchain-pinecone` todavía no publica soporte para Python 3.14 al día de hoy — con 3.14 la instalación de `requirements.txt` falla directamente (no hay wheel instalable). La imagen Docker ya usa 3.12-slim, así que solo importa si corrés fuera de Docker.
 
 ```bash
+py -3.12 -m venv .venv
+./.venv/Scripts/activate   # Linux/Mac: source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 export OPENAI_API_KEY=sk-...
@@ -88,6 +90,8 @@ El pipeline usa **LangChain** en toda la superficie de RAG y generación (`langc
 **Búsqueda vectorial — ANN (Pinecone, cosine similarity) con umbral de score.** Los embeddings se generan localmente con `all-MiniLM-L6-v2` (384 dim) vía `langchain-huggingface` (que envuelve Sentence-Transformers), sin costo de API por embedding y sin mandar el contenido de la FAQ a un servicio externo. `rag/retrieval.py` arma un `PineconeVectorStore` y llama a `similarity_search_with_score(pregunta, k=3)` — búsqueda por vecinos aproximados (ANN) sobre el índice serverless; se descartan los matches debajo de `UMBRAL_SIMILITUD_MINIMO=0.3` para no inyectarle al LLM contexto irrelevante cuando la pregunta no tiene match real en la FAQ.
 
 **Generación — `ChatOpenAI.with_structured_output(RespuestaSoporte, method="json_schema")`.** El contrato de salida es un modelo Pydantic (`schema.py::RespuestaSoporte`) en vez del dict crudo de JSON Schema que se usaba con el SDK de OpenAI. Se fuerza `method="json_schema"` (LangChain por default usa `function_calling`) para preservar la garantía de decoding estricto que ya era una decisión deliberada del proyecto (ver `REPORT.md`). Con `include_raw=True` se accede a `raw.usage_metadata` para seguir registrando tokens/costo en `metrics.jsonl` igual que antes.
+
+**Prompting — `ChatPromptTemplate` en vez de armar los mensajes a mano.** `prompts.py` separa el prompt estático (instrucciones + 3 ejemplos few-shot) de las dos variables dinámicas por consulta (`pregunta`, `bloque_contexto` con los chunks recuperados). Detalle no obvio: los ejemplos few-shot son JSON literal (`{"answer": ...}`), y `ChatPromptTemplate` usa el mismo formato de placeholders que `str.format()` — sin escapar esas llaves duplicándolas (`{{`/`}}`), el motor de templating las interpreta como variables faltantes y tira `KeyError`. Se escapa `PROMPT_SISTEMA` una sola vez, programáticamente, al cargar el módulo.
 
 **Contrato de salida — se extiende el JSON, no se reemplaza.** Además de las claves pedidas (`user_question`, `system_answer`, `chunks_related`), la respuesta conserva `confidence`, `category`, `actions` y `escalate_to_human`: son la salida estructurada que ya usa el LLM internamente para decidir si escalar a un humano, y quitarlas sería tirar información ya calculada.
 

@@ -13,6 +13,10 @@ Elegimos few-shot en lugar de chain-of-thought porque:
 
 """
 
+from __future__ import annotations
+
+from langchain_core.prompts import ChatPromptTemplate
+
 PROMPT_SISTEMA = """Sos un asistente de soporte al cliente para una plataforma de RRHH \
 (HR SaaS) que usan empresas para gestionar empleados, licencias, nómina y evaluaciones \
 de desempeño.
@@ -55,23 +59,37 @@ el alcance de soporte, así que no puedo ayudarte con esto acá.", "confidence":
 Fin de los ejemplos. Ahora respondé a la pregunta real del usuario siguiendo el mismo \
 formato y criterio de calibración."""
 
+# ChatPromptTemplate usa el mismo formato de placeholders que str.format() ({variable}),
+# así que las llaves literales de los ejemplos JSON de arriba ({"answer": ...}) hay que
+# escaparlas duplicándolas (input_types LangChain las interpretaría como variables
+# faltantes y tiraría KeyError). Lo hacemos acá, una sola vez, en vez de mantener el
+# string de PROMPT_SISTEMA ya escapado a mano — sería ilegible.
+_PROMPT_SISTEMA_ESCAPADO = PROMPT_SISTEMA.replace("{", "{{").replace("}", "}}")
 
-def construir_mensajes(pregunta: str, contexto: list[dict] | None = None) -> list[dict]:
-    """Arma los mensajes para chat.completions, agregando al system prompt el contexto
-    de FAQ recuperado por RAG (rag.retrieval.buscar_contexto) cuando hay alguno."""
-    prompt_sistema = PROMPT_SISTEMA
+_PLANTILLA_CHAT = ChatPromptTemplate.from_messages(
+    [
+        ("system", _PROMPT_SISTEMA_ESCAPADO + "{bloque_contexto}"),
+        ("user", "{pregunta}"),
+    ]
+)
+
+
+def construir_mensajes(pregunta: str, contexto: list[dict] | None = None) -> list:
+    """Renderiza la ChatPromptTemplate con la pregunta y el contexto de FAQ recuperado
+    por RAG (rag.retrieval.buscar_contexto). Devuelve una lista de BaseMessage, el
+    mismo tipo de input que espera chat_model.invoke() en src/query.py."""
+    bloque_contexto = ""
     if contexto:
-        bloque_contexto = "\n\n".join(
+        entradas = "\n\n".join(
             f"{i + 1}. Pregunta: {c['pregunta']}\n   Respuesta: {c['respuesta']}"
             for i, c in enumerate(contexto)
         )
-        prompt_sistema = (
-            f"{PROMPT_SISTEMA}\n\n"
-            "Contexto relevante de la FAQ (usalo como fuente de verdad para responder "
-            "si aplica a la pregunta del cliente; si no aplica, ignoralo):\n"
-            f"{bloque_contexto}"
+        bloque_contexto = (
+            "\n\nContexto relevante de la FAQ (usalo como fuente de verdad para "
+            "responder si aplica a la pregunta del cliente; si no aplica, ignoralo):\n"
+            f"{entradas}"
         )
-    return [
-        {"role": "system", "content": prompt_sistema},
-        {"role": "user", "content": pregunta},
-    ]
+
+    return _PLANTILLA_CHAT.invoke(
+        {"pregunta": pregunta, "bloque_contexto": bloque_contexto}
+    ).to_messages()
