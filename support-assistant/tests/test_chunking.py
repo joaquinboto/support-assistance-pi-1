@@ -8,22 +8,22 @@ from rag.chunking import chunkear_faq
 RUTA_FAQ = Path(__file__).parent.parent / "data" / "faq_document.txt"
 
 
-def test_chunkear_faq_devuelve_un_chunk_por_par_pregunta_respuesta():
-    chunks = chunkear_faq(RUTA_FAQ)
+def test_chunkear_faq_devuelve_un_document_por_par_pregunta_respuesta():
+    documentos = chunkear_faq(RUTA_FAQ)
 
-    assert len(chunks) >= 20
-    for chunk in chunks:
-        assert chunk["pregunta"]
-        assert chunk["respuesta"]
-        assert chunk["categoria"] in {"billing", "technical", "account", "policy", "other"}
-        assert chunk["pregunta"] in chunk["texto"]
-        assert chunk["respuesta"] in chunk["texto"]
+    assert len(documentos) >= 20
+    for doc in documentos:
+        assert doc.metadata["pregunta"]
+        assert doc.metadata["respuesta"]
+        assert doc.metadata["categoria"] in {"billing", "technical", "account", "policy", "other"}
+        assert doc.metadata["pregunta"] in doc.page_content
+        assert doc.metadata["respuesta"] in doc.page_content
 
 
 def test_chunkear_faq_ids_son_unicos():
-    chunks = chunkear_faq(RUTA_FAQ)
+    documentos = chunkear_faq(RUTA_FAQ)
 
-    ids = [c["id"] for c in chunks]
+    ids = [d.metadata["id"] for d in documentos]
     assert len(ids) == len(set(ids))
 
 
@@ -40,7 +40,7 @@ def test_chunkear_faq_no_corta_la_respuesta_a_mitad(tmp_path):
         encoding="utf-8",
     )
 
-    chunks = chunkear_faq(doc)
+    documentos = chunkear_faq(doc)
 
-    assert len(chunks) == 2
-    assert "segunda linea de la misma respuesta" in chunks[0]["respuesta"]
+    assert len(documentos) == 2
+    assert "segunda linea de la misma respuesta" in documentos[0].metadata["respuesta"]

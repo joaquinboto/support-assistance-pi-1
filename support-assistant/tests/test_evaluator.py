@@ -1,33 +1,31 @@
-import json
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.evaluator import ErrorValidacionEvaluacion, evaluar_respuesta, validar_evaluacion
+from src.evaluator import EvaluacionRAG, evaluar_respuesta
 
 
-def _cliente_mock(score=8, justification="Los chunks son relevantes y la respuesta los refleja."):
-    cliente = MagicMock()
-    payload = {"score": score, "justification": justification}
-    cliente.chat.completions.create.return_value = MagicMock(
-        choices=[MagicMock(message=MagicMock(content=json.dumps(payload)))]
-    )
-    return cliente
+def _chat_model_mock(score=8, justification="Los chunks son relevantes y la respuesta los refleja."):
+    parsed = EvaluacionRAG(score=score, justification=justification)
+    chat_model = MagicMock()
+    chat_model.invoke.return_value = {"raw": MagicMock(), "parsed": parsed, "parsing_error": None}
+    return chat_model
 
 
 def test_evaluar_respuesta_devuelve_score_y_justificacion():
-    cliente = _cliente_mock(score=9)
+    chat_model = _chat_model_mock(score=9)
     chunks = [{"pregunta": "¿Cómo reseteo mi contraseña?", "respuesta": "Desde login."}]
 
     evaluacion = evaluar_respuesta(
         user_question="¿Cómo reseteo mi contraseña?",
         system_answer="Andá a login y hacé clic en olvidé mi contraseña.",
         chunks_related=chunks,
-        cliente=cliente,
+        chat_model=chat_model,
     )
 
     assert evaluacion["score"] == 9
@@ -35,23 +33,18 @@ def test_evaluar_respuesta_devuelve_score_y_justificacion():
 
 
 def test_evaluar_respuesta_sin_chunks_no_rompe():
-    cliente = _cliente_mock(score=3)
+    chat_model = _chat_model_mock(score=3)
 
     evaluacion = evaluar_respuesta(
         user_question="pregunta rara",
         system_answer="No tengo información sobre eso.",
         chunks_related=[],
-        cliente=cliente,
+        chat_model=chat_model,
     )
 
     assert evaluacion["score"] == 3
 
 
-def test_validar_evaluacion_rechaza_score_fuera_de_rango():
-    with pytest.raises(ErrorValidacionEvaluacion):
-        validar_evaluacion({"score": 15, "justification": "x"})
-
-
-def test_validar_evaluacion_rechaza_justification_vacia():
-    with pytest.raises(ErrorValidacionEvaluacion):
-        validar_evaluacion({"score": 5, "justification": ""})
+def test_evaluar_respuesta_score_fuera_de_rango_es_rechazado_por_pydantic():
+    with pytest.raises(ValidationError):
+        EvaluacionRAG(score=15, justification="x")

@@ -1,28 +1,25 @@
-"""Embeddings locales con Sentence-Transformers (MiniLM) — sin costo de API por
-embedding y sin mandar el contenido de la FAQ ni las preguntas de los clientes a un
-servicio externo de embeddings.
+"""Embeddings locales con Sentence-Transformers (MiniLM) vía LangChain — sin costo de
+API por embedding y sin mandar el contenido de la FAQ ni las preguntas de los clientes
+a un servicio externo de embeddings.
 """
 
 from __future__ import annotations
 
 import os
 
+from langchain_huggingface import HuggingFaceEmbeddings
+
 NOMBRE_MODELO = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 DIMENSION_EMBEDDING = 384
 
-_modelo = None
+_embeddings = None
 
 
-def _obtener_modelo():
-    global _modelo
-    if _modelo is None:
-        from sentence_transformers import SentenceTransformer
-
-        _modelo = SentenceTransformer(NOMBRE_MODELO)
-    return _modelo
-
-
-def embeber(textos: list[str], modelo=None) -> list[list[float]]:
-    """Devuelve un embedding por texto de entrada, en el mismo orden."""
-    modelo = modelo or _obtener_modelo()
-    return modelo.encode(textos, convert_to_numpy=True).tolist()
+def obtener_embeddings() -> HuggingFaceEmbeddings:
+    """Devuelve el embeddings object de LangChain (lazy singleton). Lo consumen
+    PineconeVectorStore.add_documents / similarity_search_with_score internamente,
+    no hace falta llamar a embed_documents/embed_query a mano."""
+    global _embeddings
+    if _embeddings is None:
+        _embeddings = HuggingFaceEmbeddings(model_name=NOMBRE_MODELO)
+    return _embeddings

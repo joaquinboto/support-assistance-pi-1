@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 from openai import OpenAI
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -21,7 +22,7 @@ from moderation import esta_flageado  # noqa: E402
 from pricing import estimar_costo_usd  # noqa: E402
 from prompts import construir_mensajes  # noqa: E402
 from rag.retrieval import buscar_contexto  # noqa: E402
-from schema import ESQUEMA_JSON_RESPUESTA, validar_respuesta  # noqa: E402
+from schema import ErrorValidacionSchema, RespuestaSoporte  # noqa: E402
 from src.evaluator import evaluar_respuesta  # noqa: E402
 
 load_dotenv()
@@ -45,6 +46,15 @@ def _cliente() -> OpenAI:
     return OpenAI()
 
 
+def _chat_model_estructurado():
+    """ChatOpenAI con structured output vía Pydantic. method="json_schema" (no el
+    default function_calling) para preservar la garantía de decoding estricto que
+    ya usábamos con response_format=json_schema en el SDK crudo de OpenAI."""
+    return ChatOpenAI(model=MODELO, temperature=0.2).with_structured_output(
+        RespuestaSoporte, method="json_schema", include_raw=True
+    )
+
+
 def _armar_salida(pregunta: str, resultado: dict, chunks_related: list[dict]) -> dict:
     """Envuelve la respuesta interna con el contrato requerido: user_question,
     system_answer y chunks_related, sin perder los campos internos (confidence,
@@ -58,11 +68,19 @@ def _armar_salida(pregunta: str, resultado: dict, chunks_related: list[dict]) ->
 
 
 def procesar_consulta(
-    pregunta: str, cliente: OpenAI | None = None, evaluar: bool = False
+    pregunta: str,
+    cliente: OpenAI | None = None,
+    chat_model=None,
+    evaluar: bool = False,
 ) -> dict:
     """Corre una consulta de soporte de punta a punta: modera -> recupera contexto RAG ->
-    llama al modelo -> valida -> opcionalmente evalúa -> loguea métricas."""
+    llama al modelo -> valida -> opcionalmente evalúa -> loguea métricas.
+
+    `cliente` (OpenAI crudo) se usa solo para moderación. `chat_model` es el runnable de
+    LangChain con structured output (ver _chat_model_estructurado) que genera la respuesta.
+    """
     cliente = cliente or _cliente()
+    chat_model = chat_model or _chat_model_estructurado()
     id_solicitud = str(uuid.uuid4())
     inicio = time.perf_counter()
 
@@ -91,26 +109,22 @@ def procesar_consulta(
 
     mensajes = construir_mensajes(pregunta, contexto_faq)
 
-    respuesta = cliente.chat.completions.create(
-        model=MODELO,
-        messages=mensajes,
-        response_format={"type": "json_schema", "json_schema": ESQUEMA_JSON_RESPUESTA},
-        temperature=0.2,
-    )
+    respuesta_llm = chat_model.invoke(mensajes)
+    if respuesta_llm["parsing_error"] is not None:
+        raise ErrorValidacionSchema(str(respuesta_llm["parsing_error"]))
 
     latencia_ms = round((time.perf_counter() - inicio) * 1000, 2)
-    resultado = json.loads(respuesta.choices[0].message.content)
-    validar_respuesta(resultado)
+    resultado = respuesta_llm["parsed"].model_dump()
 
-    uso = respuesta.usage
-    costo = estimar_costo_usd(MODELO, uso.prompt_tokens, uso.completion_tokens)
+    uso = respuesta_llm["raw"].usage_metadata
+    costo = estimar_costo_usd(MODELO, uso["input_tokens"], uso["output_tokens"])
 
     _registrar_metricas(
         request_id=id_solicitud,
         model=MODELO,
-        prompt_tokens=uso.prompt_tokens,
-        completion_tokens=uso.completion_tokens,
-        total_tokens=uso.total_tokens,
+        prompt_tokens=uso["input_tokens"],
+        completion_tokens=uso["output_tokens"],
+        total_tokens=uso["total_tokens"],
         latency_ms=latencia_ms,
         estimated_cost_usd=costo,
         moderation_flagged=False,
@@ -125,7 +139,6 @@ def procesar_consulta(
             user_question=salida["user_question"],
             system_answer=salida["system_answer"],
             chunks_related=salida["chunks_related"],
-            cliente=cliente,
         )
     return salida
 

@@ -5,9 +5,12 @@ costo/latencia del scoring a cada consulta (ver flag --evaluate en src/query.py)
 
 from __future__ import annotations
 
-import json
+import os
 
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel, Field
+
+MODELO = os.environ.get("SUPPORT_ASSISTANT_MODEL", "gpt-4o-mini")
 
 PROMPT_EVALUADOR = """Sos un evaluador de calidad para un asistente de soporte RAG de una \
 plataforma de RRHH (HR SaaS). Se te va a dar la pregunta de un usuario, la respuesta que \
@@ -26,46 +29,30 @@ puntaje máximo por precisión ya que no hay contexto documental que la respalde
 Devolvé un score entero de 0 a 10 y una justificación breve (1-2 oraciones) explicando \
 el puntaje."""
 
-ESQUEMA_JSON_EVALUACION = {
-    "name": "rag_evaluation",
-    "strict": True,
-    "schema": {
-        "type": "object",
-        "properties": {
-            "score": {"type": "integer"},
-            "justification": {"type": "string"},
-        },
-        "required": ["score", "justification"],
-        "additionalProperties": False,
-    },
-}
+
+class EvaluacionRAG(BaseModel):
+    score: int = Field(ge=0, le=10)
+    justification: str
 
 
 class ErrorValidacionEvaluacion(ValueError):
-    pass
+    """Se usa cuando with_structured_output no logra parsear la evaluación."""
 
 
-def validar_evaluacion(data: dict) -> None:
-    """Defensa en profundidad sobre la garantía de structured output de OpenAI."""
-    if not isinstance(data.get("score"), int) or not (0 <= data["score"] <= 10):
-        raise ErrorValidacionEvaluacion("score debe ser un entero entre 0 y 10")
-    if not isinstance(data.get("justification"), str) or not data["justification"].strip():
-        raise ErrorValidacionEvaluacion("justification debe ser un string no vacío")
-
-
-def _cliente() -> OpenAI:
-    return OpenAI()
+def _chat_model_evaluador():
+    return ChatOpenAI(model=MODELO, temperature=0.0).with_structured_output(
+        EvaluacionRAG, method="json_schema", include_raw=True
+    )
 
 
 def evaluar_respuesta(
     user_question: str,
     system_answer: str,
     chunks_related: list[dict],
-    cliente: OpenAI | None = None,
-    modelo: str = "gpt-4o-mini",
+    chat_model=None,
 ) -> dict:
     """Puntúa una respuesta ya generada. Devuelve {"score": int, "justification": str}."""
-    cliente = cliente or _cliente()
+    chat_model = chat_model or _chat_model_evaluador()
 
     bloque_chunks = (
         "\n".join(f"- {c['pregunta']}: {c['respuesta']}" for c in chunks_related)
@@ -78,16 +65,13 @@ def evaluar_respuesta(
         f"Chunks recuperados:\n{bloque_chunks}"
     )
 
-    respuesta = cliente.chat.completions.create(
-        model=modelo,
-        messages=[
+    respuesta = chat_model.invoke(
+        [
             {"role": "system", "content": PROMPT_EVALUADOR},
             {"role": "user", "content": contenido_usuario},
-        ],
-        response_format={"type": "json_schema", "json_schema": ESQUEMA_JSON_EVALUACION},
-        temperature=0.0,
+        ]
     )
+    if respuesta["parsing_error"] is not None:
+        raise ErrorValidacionEvaluacion(str(respuesta["parsing_error"]))
 
-    resultado = json.loads(respuesta.choices[0].message.content)
-    validar_evaluacion(resultado)
-    return resultado
+    return respuesta["parsed"].model_dump()
